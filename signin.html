@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In - Returning Farmer</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #2d6a4f;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            background: white;
+            color: #2d6a4f;
+            transition: 0.3s;
+            border: none;
+        }
+
+        .auth-tab.active {
+            background: #2d6a4f;
+            color: white;
+        }
+
+        .auth-panel {
+            display: none;
+        }
+
+        .auth-panel.active {
+            display: block;
+        }
+
+        .otp-input-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .otp-box {
+            width: 48px;
+            height: 55px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            color: #1b4332;
+            background: #f9f9f9;
+        }
+
+        .otp-box:focus {
+            border-color: #2d6a4f;
+            background: white;
+            outline: none;
+        }
+
+        #recaptcha-container {
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .success-box {
+            background: #dcfce7;
+            color: #166534;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .error-box {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            display: none;
+        }
+    </style>
+</head>
+
+<body class="farm-bg">
+    <div class="form-container">
+        <div class="form-card" style="width: 380px;">
+            <h2>Welcome Back 🌾</h2>
+            <p>Sign in to access your barn.</p>
+
+            <div class="error-box" id="errorMsg"></div>
+            <div class="success-box" id="successMsg"></div>
+
+            <!-- Auth Method Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('email')">📧 Email</button>
+                <button class="auth-tab" onclick="switchTab('phone')">📱 Phone OTP</button>
+            </div>
+
+            <!-- EMAIL SIGN IN -->
+            <div class="auth-panel active" id="emailPanel">
+                <form onsubmit="emailSignIn(event)">
+                    <div class="input-group">
+                        <label>Email Address</label>
+                        <input type="email" id="email" placeholder="farmer@example.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="btn btn-old" id="emailBtn">Enter the Barn</button>
+                </form>
+                <div style="text-align:center; margin-top: 12px;">
+                    <a href="#" onclick="resetPassword()" style="color: #2d6a4f; font-size: 0.85rem;">Forgot
+                        Password?</a>
+                </div>
+            </div>
+
+            <!-- PHONE OTP SIGN IN -->
+            <div class="auth-panel" id="phonePanel">
+                <!-- Step 1: Enter Phone -->
+                <div id="phoneStep1">
+                    <div class="input-group">
+                        <label>📱 Mobile Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="+91 98765 43210" required>
+                    </div>
+                    <div id="recaptcha-container"></div>
+                    <button class="btn btn-old" id="sendOtpBtn" onclick="sendOTP()" style="width:100%;">Send
+                        OTP</button>
+                </div>
+
+                <!-- Step 2: Enter OTP -->
+                <div id="phoneStep2" style="display:none; text-align:center;">
+                    <p>Enter the 6-digit code sent to <strong id="sentTo"></strong></p>
+                    <div class="otp-input-row">
+                        <input type="text" maxlength="1" class="otp-box" oninput="otpAutoFocus(this, 0)">
+                        <input type="text" maxlength="1" class="otp-box" oninput="otpAutoFocus(this, 1)">
+                        <input type="text" maxlength="1" class="otp-box" oninput="otpAutoFocus(this, 2)">
+                        <input type="text" maxlength="1" class="otp-box" oninput="otpAutoFocus(this, 3)">
+                        <input type="text" maxlength="1" class="otp-box" oninput="otpAutoFocus(this, 4)">
+                        <input type="text" maxlength="1" class="otp-box" oninput="otpAutoFocus(this, 5)">
+                    </div>
+                    <button class="btn btn-new" id="verifyOtpBtn" onclick="verifyOTP()" style="width:100%;">Verify &
+                        Sign In</button>
+                    <p style="margin-top: 12px; font-size: 0.85rem;">
+                        Didn't get code? <a href="#" onclick="sendOTP()" style="color: #2d6a4f;">Resend OTP</a>
+                    </p>
+                </div>
+            </div>
+
+            <div class="divider" style="margin: 20px 0;"><span>or</span></div>
+
+            <button class="btn btn-new" onclick="googleSignIn()"
+                style="width:100%; display:flex; align-items:center; justify-content:center; gap:10px;">
+                <span style="font-size:1.3rem;">🔵</span> Sign In with Google
+            </button>
+
+            <p class="footer-link">
+                New farmer? <a href="register.html">Create Account</a> &nbsp;|&nbsp;
+                <a href="index.html">← Back to Gate</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        let confirmationResult = null;
+        let recaptchaVerifier = null;
+
+        // If already logged in, go to home
+        auth.onAuthStateChanged(user => {
+            if (user) window.location.href = 'home.html';
+        });
+
+        // ============ Tab Switching ============
+        function switchTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.auth-panel').forEach(p => p.classList.remove('active'));
+
+            if (tab === 'email') {
+                document.querySelectorAll('.auth-tab')[0].classList.add('active');
+                document.getElementById('emailPanel').classList.add('active');
+            } else {
+                document.querySelectorAll('.auth-tab')[1].classList.add('active');
+                document.getElementById('phonePanel').classList.add('active');
+                initRecaptcha();
+            }
+        }
+
+        // ============ Helpers ============
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg; el.style.display = 'block';
+            document.getElementById('successMsg').style.display = 'none';
+            setTimeout(() => el.style.display = 'none', 5000);
+        }
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.textContent = msg; el.style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+        }
+
+        // ============ Email Sign In ============
+        async function emailSignIn(event) {
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const btn = document.getElementById('emailBtn');
+            btn.disabled = true; btn.textContent = '⏳ Signing in...';
+
+            try {
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                db.collection('users').doc(result.user.uid).set({
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                window.location.href = 'home.html';
+            } catch (err) {
+                const messages = {
+                    'auth/user-not-found': 'No account found with this email.',
+                    'auth/wrong-password': 'Incorrect password.',
+                    'auth/invalid-email': 'Please enter a valid email.',
+                    'auth/too-many-requests': 'Too many attempts. Try later.',
+                    'auth/invalid-credential': 'Invalid email or password.'
+                };
+                showError(messages[err.code] || err.message);
+            } finally {
+                btn.disabled = false; btn.textContent = 'Enter the Barn';
+            }
+        }
+
+        // ============ Phone OTP ============
+        function initRecaptcha() {
+            if (recaptchaVerifier) return;
+            recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+                size: 'normal',
+                callback: () => { document.getElementById('sendOtpBtn').disabled = false; }
+            });
+            recaptchaVerifier.render();
+        }
+
+        async function sendOTP() {
+            const phone = document.getElementById('phoneNumber').value.trim();
+            if (!phone || !phone.startsWith('+')) {
+                showError('Enter phone with country code (e.g. +91...)');
+                return;
+            }
+
+            const btn = document.getElementById('sendOtpBtn');
+            btn.disabled = true; btn.textContent = '⏳ Sending OTP...';
+
+            try {
+                if (!recaptchaVerifier) initRecaptcha();
+                confirmationResult = await auth.signInWithPhoneNumber(phone, recaptchaVerifier);
+                document.getElementById('sentTo').textContent = phone;
+                document.getElementById('phoneStep1').style.display = 'none';
+                document.getElementById('phoneStep2').style.display = 'block';
+                showSuccess('OTP sent to ' + phone);
+            } catch (err) {
+                showError('Failed to send OTP: ' + err.message);
+                // Reset reCAPTCHA on error
+                recaptchaVerifier = null;
+                document.getElementById('recaptcha-container').innerHTML = '';
+                initRecaptcha();
+            } finally {
+                btn.disabled = false; btn.textContent = 'Send OTP';
+            }
+        }
+
+        async function verifyOTP() {
+            const boxes = document.querySelectorAll('.otp-box');
+            const otp = Array.from(boxes).map(b => b.value).join('');
+
+            if (otp.length !== 6) { showError('Please enter all 6 digits.'); return; }
+
+            const btn = document.getElementById('verifyOtpBtn');
+            btn.disabled = true; btn.textContent = '⏳ Verifying...';
+
+            try {
+                const result = await confirmationResult.confirm(otp);
+                // Save user to Firestore
+                await db.collection('users').doc(result.user.uid).set({
+                    phone: result.user.phoneNumber || '',
+                    provider: 'phone',
+                    lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+                showSuccess('Phone verified! Redirecting...');
+                setTimeout(() => { window.location.href = 'home.html'; }, 1000);
+            } catch (err) {
+                showError('Invalid OTP. Please try again.');
+            } finally {
+                btn.disabled = false; btn.textContent = 'Verify & Sign In';
+            }
+        }
+
+        // Auto-focus next OTP box
+        function otpAutoFocus(el, idx) {
+            const boxes = document.querySelectorAll('.otp-box');
+            if (el.value.length === 1 && idx < boxes.length - 1) boxes[idx + 1].focus();
+        }
+
+        // ============ Google Sign In ============
+        function googleSignIn() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(result => {
+                    db.collection('users').doc(result.user.uid).set({
+                        name: result.user.displayName || '', email: result.user.email,
+                        photo: result.user.photoURL || '', provider: 'google',
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    window.location.href = 'home.html';
+                })
+                .catch(err => showError('Google Sign-In failed: ' + err.message));
+        }
+
+        // ============ Password Reset ============
+        function resetPassword() {
+            const email = document.getElementById('email').value;
+            if (!email) { alert('Enter your email first.'); return; }
+            auth.sendPasswordResetEmail(email)
+                .then(() => alert('Password reset email sent!'))
+                .catch(err => showError(err.message));
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Soil Analysis | FarmGate</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .sa-page {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Hero */
+        .sa-hero {
+            background: linear-gradient(135deg, #78350f, #92400e, #a16207, #ca8a04);
+            border-radius: 24px;
+            padding: 36px 40px;
+            color: white;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .sa-hero::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+        }
+
+        .sa-hero-icon {
+            font-size: 4rem;
+            animation: floatIcon 3s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes floatIcon {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
+        }
+
+        .sa-hero h1 {
+            margin: 0 0 6px;
+            font-size: 1.6rem;
+            z-index: 2;
+        }
+
+        .sa-hero p {
+            margin: 0;
+            opacity: 0.85;
+            font-size: 0.9rem;
+            z-index: 2;
+        }
+
+        /* Upload Grid */
+        .sa-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .sa-upload-zone {
+            border: 3px dashed #92400e;
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            cursor: pointer;
+            transition: 0.3s;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .sa-upload-zone:hover {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-color: #78350f;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(146, 64, 14, 0.15);
+        }
+
+        .sa-upload-zone.drag-over {
+            background: #fde68a;
+            border-style: solid;
+            transform: scale(1.02);
+        }
+
+        .sa-upload-zone.has-image {
+            padding: 10px;
+            border-style: solid;
+        }
+
+        .sa-upload-zone .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 12px;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        .sa-upload-zone h3 {
+            color: #78350f;
+            margin: 0 0 6px;
+        }
+
+        .sa-upload-zone p {
+            color: #666;
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+        }
+
+        .sa-upload-zone .hint {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .sa-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 14px;
+            object-fit: contain;
+        }
+
+        /* Info Panel */
+        .sa-info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .sa-info-card {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            padding: 18px;
+            border-radius: 14px;
+            border-left: 4px solid #ca8a04;
+        }
+
+        .sa-info-card h4 {
+            margin: 0 0 6px;
+            color: #78350f;
+            font-size: 0.9rem;
+        }
+
+        .sa-info-card p {
+            margin: 0;
+            font-size: 0.82rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .sa-analyze-btn {
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #78350f, #92400e);
+            color: white;
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            margin-top: auto;
+        }
+
+        .sa-analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(120, 53, 15, 0.3);
+        }
+
+        .sa-analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading */
+        .sa-loading {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .sa-loading .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #fde68a;
+            border-top: 5px solid #92400e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Summary Banner */
+        .sa-summary-banner {
+            background: linear-gradient(135deg, #78350f, #92400e, #a16207);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .sa-summary-banner h2 {
+            margin: 0 0 10px;
+            font-size: 1.5rem;
+        }
+
+        .sa-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .sa-badge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .sa-badge.good {
+            background: rgba(52, 211, 153, 0.3);
+        }
+
+        .sa-badge.warn {
+            background: rgba(251, 191, 36, 0.3);
+        }
+
+        .sa-badge.danger {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .sa-health-gauge {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px 28px;
+            border-radius: 14px;
+        }
+
+        .sa-health-gauge .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+        }
+
+        .sa-health-gauge .score {
+            font-size: 2.2rem;
+            font-weight: 800;
+        }
+
+        /* Stats Row */
+        .sa-stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .sa-stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+            border-top: 3px solid #ca8a04;
+            transition: 0.3s;
+        }
+
+        .sa-stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .sa-stat-card .stat-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .sa-stat-card .stat-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            color: #888;
+            font-weight: 600;
+        }
+
+        .sa-stat-card .stat-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #78350f;
+            margin-top: 4px;
+        }
+
+        /* Detail Cards */
+        .sa-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .sa-detail-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e8ece8;
+            transition: 0.3s;
+        }
+
+        .sa-detail-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .sa-detail-card .dc-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #fffbeb;
+        }
+
+        .sa-detail-card .dc-header span {
+            font-size: 1.6rem;
+        }
+
+        .sa-detail-card .dc-header h3 {
+            margin: 0;
+            color: #78350f;
+            font-size: 1rem;
+        }
+
+        .sa-detail-card .dc-body {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .sa-detail-card .dc-body ul {
+            padding-left: 18px;
+            margin: 8px 0 0;
+        }
+
+        .sa-detail-card .dc-body li {
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .sa-upload-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sa-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .sa-summary-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="logo">🌾 GREEN PULSE</div>
+        <ul class="side-nav">
+            <li onclick="location.href='home.html'">Main Menu</li>
+            <li class="active" onclick="location.href='soil.html'">Soil Data</li>
+            <li onclick="location.href='weather.html'">Weather</li>
+            <li onclick="location.href='crop-recommend.html'">Crop Strategist</li>
+            <li onclick="location.href='disease.html'">Disease Detector</li>
+            <li onclick="location.href='market.html'">Marketplace</li>
+            <li onclick="location.href='chatbot.html'">AI Assistant</li>
+            <li onclick="signOut()" style="margin-top:30px; background:#e63946; text-align:center; border-radius:8px;">
+                🚪 Sign Out</li>
+        </ul>
+    </nav>
+
+    <main class="main-content sa-page">
+
+        <!-- Hero -->
+        <div class="sa-hero">
+            <div class="sa-hero-icon">🌍</div>
+            <div>
+                <h1>AI Soil Analysis</h1>
+                <p>Upload a soil photo → Gemini AI analyzes moisture, composition, health & gives actionable farming
+                    advice.</p>
+            </div>
+        </div>
+
+        <!-- Upload + Info -->
+        <div class="sa-upload-grid">
+            <div class="sa-upload-zone" id="uploadZone" onclick="document.getElementById('imageInput').click()">
+                <div id="uploadPlaceholder">
+                    <div class="upload-icon">🪨</div>
+                    <h3>Upload Soil Photo</h3>
+                    <p>Drag & drop or click to browse</p>
+                    <span class="hint">Close-up of field soil in natural light</span>
+                </div>
+                <img id="imagePreview" class="sa-preview" style="display:none;" alt="Soil Preview">
+                <input type="file" id="imageInput" accept="image/*" style="display:none;"
+                    onchange="previewImage(event)">
+            </div>
+
+            <div class="sa-info-panel">
+                <div class="sa-info-card">
+                    <h4>📸 Photo Tips for Best Results</h4>
+                    <p>Take in natural daylight. Include close-up of soil surface. Avoid shadows and blurriness for
+                        accurate analysis.</p>
+                </div>
+                <div class="sa-info-card">
+                    <h4>🔬 What AI Analyzes</h4>
+                    <p>Moisture level, soil type, organic matter, pH estimate, compaction, drainage quality, and gives
+                        crop & fertilizer recommendations.</p>
+                </div>
+                <div class="sa-info-card">
+                    <h4>🌾 Why It Matters</h4>
+                    <p>Know your soil health to choose right crops, save water, and apply correct fertilizer — boosting
+                        yield & profit.</p>
+                </div>
+                <button class="sa-analyze-btn" id="analyzeBtn" onclick="analyzeSoil()" disabled>
+                    🧪 Analyze Soil
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsContainer"></div>
+
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        requireAuth();
+        const BACKEND_URL = 'http://localhost:5000';
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+                document.getElementById('uploadPlaceholder').style.display = 'none';
+                document.getElementById('uploadZone').classList.add('has-image');
+                document.getElementById('analyzeBtn').disabled = false;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Drag & Drop
+        const zone = document.getElementById('uploadZone');
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault(); zone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const input = document.getElementById('imageInput');
+                const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+                previewImage({ target: input });
+            }
+        });
+
+        async function analyzeSoil() {
+            const imageInput = document.getElementById('imageInput');
+            if (!imageInput.files[0]) { alert('Please upload a soil image first!'); return; }
+
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '<div class="sa-loading"><div class="spinner"></div><p style="color:#78350f;font-weight:600;">Gemini AI analyzing your soil...</p><span style="color:#888;">Examining moisture, texture, composition...</span></div>';
+
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('analyzeBtn').textContent = '⏳ Analyzing...';
+
+            const formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/analyze-soil`, { method: 'POST', body: formData });
+                const data = await response.json();
+                if (data.success) { displayResults(data.analysis); }
+                else { container.innerHTML = '<div class="sa-loading"><span style="font-size:3rem;">❌</span><p style="color:#e63946;">' + (data.error || 'Error') + '</p></div>'; }
+            } catch (err) {
+                container.innerHTML = '<div class="sa-loading"><span style="font-size:3rem;">❌</span><p style="color:#e63946;">Connection error. Is the server running?</p></div>';
+            }
+
+            document.getElementById('analyzeBtn').disabled = false;
+            document.getElementById('analyzeBtn').textContent = '🧪 Analyze Soil';
+        }
+
+        function displayResults(s) {
+            const statusColors = { 'Critically Dry': 'danger', 'Dry': 'warn', 'Moderate': 'good', 'Moist': 'good', 'Waterlogged': 'danger' };
+            const statusClass = statusColors[s.moisture_status] || '';
+
+            function getHealthColor(score) {
+                const n = parseInt(score);
+                if (n >= 70) return '#34d399';
+                if (n >= 40) return '#fbbf24';
+                return '#ef4444';
+            }
+
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = `
+                <!-- Summary -->
+                <div class="sa-summary-banner">
+                    <div>
+                        <h2>🌍 ${s.soil_type || 'Unknown'} Soil</h2>
+                        <div class="sa-badges">
+                            <span class="sa-badge ${statusClass}">💧 ${s.moisture_status || 'N/A'}</span>
+                            <span class="sa-badge">🎨 ${s.soil_color || 'N/A'}</span>
+                            <span class="sa-badge">📊 Organic: ${s.organic_matter || 'N/A'}</span>
+                        </div>
+                    </div>
+                    <div class="sa-health-gauge">
+                        <div class="label">Health Score</div>
+                        <div class="score" style="color:${getHealthColor(s.health_score)}">${s.health_score || '—'}/100</div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="sa-stats-row">
+                    <div class="sa-stat-card"><div class="stat-icon">💧</div><div class="stat-label">Moisture</div><div class="stat-value">${s.moisture_level || 'N/A'}</div></div>
+                    <div class="sa-stat-card"><div class="stat-icon">🧪</div><div class="stat-label">pH Level</div><div class="stat-value">${s.ph_estimate || 'N/A'}</div></div>
+                    <div class="sa-stat-card"><div class="stat-icon">🏔️</div><div class="stat-label">Texture</div><div class="stat-value">${s.texture || 'N/A'}</div></div>
+                    <div class="sa-stat-card"><div class="stat-icon">🔩</div><div class="stat-label">Compaction</div><div class="stat-value">${s.compaction || 'N/A'}</div></div>
+                    <div class="sa-stat-card"><div class="stat-icon">🌊</div><div class="stat-label">Drainage</div><div class="stat-value">${s.drainage || 'N/A'}</div></div>
+                </div>
+
+                <!-- Details -->
+                <div class="sa-detail-grid">
+                    <div class="sa-detail-card">
+                        <div class="dc-header"><span>⚠️</span><h3>Issues Detected</h3></div>
+                        <div class="dc-body">${formatList(s.issues)}</div>
+                    </div>
+                    <div class="sa-detail-card">
+                        <div class="dc-header"><span>✅</span><h3>Recommendations</h3></div>
+                        <div class="dc-body">${formatList(s.recommendations)}</div>
+                    </div>
+                    <div class="sa-detail-card">
+                        <div class="dc-header"><span>🌱</span><h3>Suitable Crops</h3></div>
+                        <div class="dc-body">${formatList(s.suitable_crops)}</div>
+                    </div>
+                    <div class="sa-detail-card">
+                        <div class="dc-header"><span>💊</span><h3>Fertilizer Advice</h3></div>
+                        <div class="dc-body"><p>${s.fertilizer_advice || 'No data'}</p></div>
+                    </div>
+                    <div class="sa-detail-card">
+                        <div class="dc-header"><span>💧</span><h3>Irrigation Advice</h3></div>
+                        <div class="dc-body"><p>${s.irrigation_advice || 'No data'}</p></div>
+                    </div>
+                    ${s.additional_notes ? `
+                    <div class="sa-detail-card">
+                        <div class="dc-header"><span>📌</span><h3>Additional Notes</h3></div>
+                        <div class="dc-body"><p>${s.additional_notes}</p></div>
+                    </div>` : ''}
+                </div>
+            `;
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function formatList(arr) {
+            if (!arr || arr.length === 0) return '<p style="opacity:0.6">No data available</p>';
+            return '<ul>' + arr.map(i => `<li>${i}</li>`).join('') + '</ul>';
+        }
+    </script>
+</body>
+
+</html>

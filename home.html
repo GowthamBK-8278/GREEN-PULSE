@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmGate | Main Menu</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="logo">🌾 GREEN PULSE</div>
+        <ul class="side-nav">
+            <li class="active" onclick="location.href='home.html'">Main Menu</li>
+            <li onclick="location.href='soil.html'">Soil Data</li>
+            <li onclick="location.href='weather.html'">Weather</li>
+            <li onclick="location.href='crop-recommend.html'">Crop Strategist</li>
+            <li onclick="location.href='disease.html'">Disease Detector</li>
+            <li onclick="location.href='market.html'">Marketplace</li>
+            <li onclick="location.href='chatbot.html'">AI Assistant</li>
+            <li onclick="signOut()" style="margin-top:30px; background:#e63946; text-align:center; border-radius:8px;">
+                🚪 Sign Out</li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="menu-header">
+            <div class="header-top">
+                <div class="welcome-text">
+                    <h1>Welcome to the Homestead</h1>
+                    <p id="live-date">Thursday, February 26, 2026</p>
+                </div>
+                <div class="live-clock" id="clock">17:06:02</div>
+            </div>
+
+            <div class="weather-summary-bar">
+                <div class="weather-item">
+                    <span class="label">Condition</span>
+                    <span class="val">☀️ Clear Skies</span>
+                </div>
+                <div class="weather-item">
+                    <span class="label">Temperature</span>
+                    <span class="val">24°C</span>
+                </div>
+                <div class="weather-item">
+                    <span class="label">Humidity</span>
+                    <span class="val">45%</span>
+                </div>
+            </div>
+        </header>
+
+        <section class="menu-grid">
+            <div class="menu-card" onclick="location.href='soil.html'">
+                <div class="menu-icon">💧</div>
+                <div class="menu-info">
+                    <h3>Soil Moisture</h3>
+                    <p>View real-time moisture levels across all fields.</p>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="location.href='weather.html'">
+                <div class="menu-icon">☀️</div>
+                <div class="menu-info">
+                    <h3>Weather Center</h3>
+                    <p>7-day forecasts and historical graphs.</p>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="location.href='crop-recommend.html'">
+                <div class="menu-icon">🌱</div>
+                <div class="menu-info">
+                    <h3>Crop Strategist</h3>
+                    <p>Get your custom planting blueprint.</p>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="location.href='disease.html'">
+                <div class="menu-icon">🔬</div>
+                <div class="menu-info">
+                    <h3>Disease Detector</h3>
+                    <p>AI-powered plant disease diagnosis.</p>
+                </div>
+            </div>
+
+            <section class="dashboard-blueprint card" id="dashBlueprint" style="display:none;">
+                <div class="blueprint-header">
+                    <h3>🌱 Active Crop Strategy</h3>
+                    <span class="badge">Live Recommendation</span>
+                </div>
+                <div class="blueprint-stats">
+                    <div class="stat-item">
+                        <strong>Crop:</strong>
+                        <span id="dashCrop">--</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Seeds:</strong>
+                        <span id="dashSeeds">-- kg</span>
+                    </div>
+                    <div class="stat-item">
+                        <strong>Fertilizer:</strong>
+                        <span id="dashFert">--</span>
+                    </div>
+                </div>
+            </section>
+
+            <div class="menu-card" onclick="location.href='market.html'">
+                <div class="menu-icon">🚜</div>
+                <div class="menu-info">
+                    <h3>Buy Produce</h3>
+                    <p>Find seeds and equipment locally.</p>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="location.href='seller-upload.html'">
+                <div class="menu-icon">🌾</div>
+                <div class="menu-info">
+                    <h3>Sell Crops</h3>
+                    <p>List your harvest for global buyers.</p>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="location.href='chatbot.html'" style="border: 2px solid #2d6a4f;">
+                <div class="menu-icon">🤖</div>
+                <div class="menu-info">
+                    <h3>AI Assistant</h3>
+                    <p>Chat with KrishiMitra for farming advice.</p>
+                    <span class="notification-badge" style="background:#2d6a4f;">NEW</span>
+                </div>
+            </div>
+
+            <div class="menu-card" onclick="location.href='messages.html'">
+                <div class="menu-icon">📩</div>
+                <div class="menu-info">
+                    <h3>Message Inbox</h3>
+                    <p>Check inquiries and alerts.</p>
+                    <span class="notification-badge">2 New</span>
+                </div>
+            </div>
+        </section>
+
+        <footer class="news-ticker-container">
+            <div class="ticker-label">LIVE ALERTS</div>
+            <div class="ticker-wrap">
+                <div class="ticker-move">
+                    <span class="ticker-item">🌾 Wheat prices up 2%...</span>
+                    <span class="ticker-item">💧 Fertilizer subsidy announced...</span>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <script>
+        window.onload = () => {
+            const savedCrop = localStorage.getItem('savedCrop');
+            if (savedCrop) {
+                document.getElementById('dashBlueprint').style.display = 'block';
+                document.getElementById('dashCrop').innerText = savedCrop;
+                document.getElementById('dashSeeds').innerText = localStorage.getItem('savedSeeds') + " kg";
+                document.getElementById('dashFert').innerText = localStorage.getItem('savedFert');
+            }
+        }
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+    </script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script>
+        // Auth guard — redirect to login if not authenticated
+        requireAuth();
+
+        // Show user name in welcome text
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                const name = user.displayName || user.email;
+                document.querySelector('.welcome-text h1').textContent = `Welcome, ${name} 🌾`;
+            }
+        });
+    </script>
+</body>
+
+</html>

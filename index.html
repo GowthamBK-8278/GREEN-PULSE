@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Farm Gate - Welcome</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="farm-bg">
+    <div class="overlay">
+        <div class="choice-card">
+            <div class="emoji-header">🌾</div>
+            <h1>Welcome to the Fields</h1>
+            <p>How would you like to enter today?</p>
+
+            <div class="button-stack">
+                <a href="signin.html" class="btn btn-old">Sign In (Old Account)</a>
+                <a href="register.html" class="btn btn-new">Register (New Account)</a>
+            </div>
+
+            <div class="divider"><span>or sign in with</span></div>
+
+            <button class="btn btn-old" onclick="googleSignIn()"
+                style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                <span style="font-size: 1.3rem;">🔵</span> Continue with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        // If already logged in, go to home
+        auth.onAuthStateChanged(user => {
+            if (user) window.location.href = 'home.html';
+        });
+
+        // Google Sign In
+        function googleSignIn() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider)
+                .then(result => {
+                    const user = result.user;
+                    // Save user profile to Firestore
+                    db.collection('users').doc(user.uid).set({
+                        name: user.displayName || '',
+                        email: user.email,
+                        phone: user.phoneNumber || '',
+                        photo: user.photoURL || '',
+                        provider: 'google',
+                        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+                    }, { merge: true });
+                    window.location.href = 'home.html';
+                })
+                .catch(err => {
+                    alert('Google Sign-In failed: ' + err.message);
+                });
+        }
+    </script>
+</body>
+
+</html>

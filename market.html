@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroMarket | Trade Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ============ MARKETPLACE PREMIUM STYLES ============ */
+        .market-header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .market-search {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .market-search input {
+            flex: 1;
+            padding: 12px 18px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+
+        .market-search input:focus {
+            border-color: #2d6a4f;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.15);
+        }
+
+        .market-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .cart-btn,
+        .orders-btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-btn {
+            background: linear-gradient(135deg, #1b4332, #2d6a4f);
+            color: white;
+            position: relative;
+        }
+
+        .cart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(27, 67, 50, 0.3);
+        }
+
+        .cart-count {
+            background: #e63946;
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            position: absolute;
+            top: -6px;
+            right: -6px;
+        }
+
+        .orders-btn {
+            background: #3d2616;
+            color: white;
+        }
+
+        .orders-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(61, 38, 22, 0.3);
+        }
+
+        /* Category Filter */
+        .category-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .cat-pill {
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #2d6a4f;
+            background: white;
+            color: #2d6a4f;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .cat-pill.active,
+        .cat-pill:hover {
+            background: #2d6a4f;
+            color: white;
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .p-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+            border: 1px solid #e8e8e8;
+            position: relative;
+        }
+
+        .p-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .p-card-img {
+            width: 100%;
+            height: 180px;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+
+        .p-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .p-card:hover .p-card-img img {
+            transform: scale(1.05);
+        }
+
+        .p-card-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .badge-organic {
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+        }
+
+        .badge-bestseller {
+            background: linear-gradient(135deg, #e67e22, #f39c12);
+        }
+
+        .badge-new {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .p-card-body {
+            padding: 16px;
+        }
+
+        .p-card-body h3 {
+            margin: 0 0 5px 0;
+            color: #1b4332;
+            font-size: 1.05rem;
+        }
+
+        .p-card-body .p-seller {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 8px;
+        }
+
+        .p-card-body .p-price {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d6a4f;
+            margin-bottom: 5px;
+        }
+
+        .p-card-body .p-unit {
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .p-card-body .p-rating {
+            color: #f39c12;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .p-card-footer {
+            display: flex;
+            gap: 8px;
+        }
+
+        .add-cart-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #1b4332, #2d6a4f);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.85rem;
+        }
+
+        .add-cart-btn:hover {
+            box-shadow: 0 4px 15px rgba(45, 106, 79, 0.3);
+        }
+
+        .quick-view-btn {
+            padding: 10px 14px;
+            border: 2px solid #2d6a4f;
+            border-radius: 10px;
+            background: white;
+            color: #2d6a4f;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .quick-view-btn:hover {
+            background: #2d6a4f;
+            color: white;
+        }
+
+        /* Modal Base */
+        .market-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .market-modal.show {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(30px);
+                opacity: 0
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1
+            }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #999;
+            border: none;
+            background: none;
+        }
+
+        .modal-close:hover {
+            color: #333;
+        }
+
+        /* Cart Items */
+        .cart-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #f5f5f5;
+            flex-shrink: 0;
+        }
+
+        .cart-item-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-info h4 {
+            margin: 0 0 3px 0;
+            color: #1b4332;
+        }
+
+        .cart-item-info span {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        .cart-item-price {
+            font-weight: bold;
+            color: #2d6a4f;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qty-btn {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qty-btn:hover {
+            background: #eee;
+        }
+
+        .remove-btn {
+            color: #e63946;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border: none;
+            background: none;
+            margin-top: 4px;
+        }
+
+        /* Cart Summary */
+        .cart-summary {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f0fdf4, #e8f5e9);
+            border-radius: 12px;
+        }
+
+        .cart-summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        .cart-summary-row.total {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #1b4332;
+            border-top: 2px solid #2d6a4f;
+            padding-top: 10px;
+            margin-top: 10px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #1b4332, #2d6a4f);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.3s;
+        }
+
+        .checkout-btn:hover {
+            box-shadow: 0 8px 25px rgba(27, 67, 50, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Orders */
+        .order-card {
+            background: #f9fbf9;
+            border: 1px solid #e0e0e0;
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .order-id {
+            font-weight: bold;
+            color: #1b4332;
+        }
+
+        .order-status {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .status-confirmed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-shipped {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-delivered {
+            background: #f0fdf4;
+            color: #14532d;
+        }
+
+        .status-processing {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+
+        /* Tracking Steps */
+        .tracking-steps {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            position: relative;
+        }
+
+        .tracking-steps::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #e0e0e0;
+            z-index: 0;
+        }
+
+        .track-step {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .track-dot {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .track-dot.active {
+            background: linear-gradient(135deg, #1b4332, #2d6a4f);
+            color: white;
+            box-shadow: 0 3px 10px rgba(45, 106, 79, 0.3);
+        }
+
+        .track-dot.done {
+            background: #27ae60;
+            color: white;
+        }
+
+        .track-label {
+            font-size: 0.7rem;
+            color: #888;
+        }
+
+        .track-label.active {
+            color: #1b4332;
+            font-weight: bold;
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .no-orders span {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .sell-btn {
+            padding: 12px 22px;
+            border: none;
+            border-radius: 12px;
+            background: #e67e22;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.95rem;
+        }
+
+        .sell-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(230, 126, 34, 0.3);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #1b4332;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: bold;
+            z-index: 99999;
+            animation: slideUp 0.3s;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .toast.hide {
+            animation: fadeOut 0.3s forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateY(10px)
+            }
+        }
+
+        @media(max-width:768px) {
+            .market-header-bar {
+                flex-direction: column;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+
+            .tracking-steps {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body">
+
+    <nav class="sidebar">
+        <div class="logo">🌾 GREEN PULSE</div>
+        <ul class="side-nav">
+            <li onclick="location.href='home.html'">Main Menu</li>
+            <li onclick="location.href='soil.html'">Soil Data</li>
+            <li onclick="location.href='weather.html'">Weather</li>
+            <li onclick="location.href='crop-recommend.html'">Crop Strategist</li>
+            <li onclick="location.href='disease.html'">Disease Detector</li>
+            <li class="active" onclick="location.href='market.html'">Marketplace</li>
+            <li onclick="location.href='chatbot.html'">AI Assistant</li>
+            <li onclick="signOut()" style="margin-top:30px; background:#e63946; text-align:center; border-radius:8px;">
+                🚪 Sign Out</li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <!-- Header Bar -->
+        <div class="market-header-bar">
+            <div>
+                <h1 style="margin:0;">🛒 AgroMarket</h1>
+                <p style="margin:5px 0 0 0; color:#666;">Fresh farm produce, seeds & equipment</p>
+            </div>
+            <div class="market-search">
+                <input type="text" id="searchInput" placeholder="Search products..." oninput="filterProducts()">
+            </div>
+            <div class="market-actions">
+                <button class="sell-btn" onclick="location.href='seller-upload.html'">📦 Sell Produce</button>
+                <button class="cart-btn" onclick="openCart()">🛒 Cart <span class="cart-count"
+                        id="cartCount">0</span></button>
+                <button class="orders-btn" onclick="openOrders()">📋 Orders</button>
+            </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="category-bar" id="categoryBar">
+            <span class="cat-pill active" onclick="filterCategory('all')">🌾 All</span>
+            <span class="cat-pill" onclick="filterCategory('grains')">🌾 Grains</span>
+            <span class="cat-pill" onclick="filterCategory('vegetables')">🥬 Vegetables</span>
+            <span class="cat-pill" onclick="filterCategory('fruits')">🍎 Fruits</span>
+            <span class="cat-pill" onclick="filterCategory('seeds')">🌱 Seeds</span>
+            <span class="cat-pill" onclick="filterCategory('dairy')">🥛 Dairy</span>
+            <span class="cat-pill" onclick="filterCategory('spices')">🌶️ Spices</span>
+            <span class="cat-pill" onclick="filterCategory('equipment')">🚜 Equipment</span>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="product-grid" id="productGrid"></div>
+    </main>
+
+    <!-- Cart Modal -->
+    <div class="market-modal" id="cartModal">
+        <div class="modal-box">
+            <button class="modal-close" onclick="closeCart()">&times;</button>
+            <h2>🛒 Shopping Cart</h2>
+            <div id="cartItems"></div>
+            <div class="cart-summary" id="cartSummary" style="display:none;">
+                <div class="cart-summary-row"><span>Subtotal</span><span id="subtotal">₹0</span></div>
+                <div class="cart-summary-row"><span>Delivery</span><span>₹49</span></div>
+                <div class="cart-summary-row"><span>Platform Fee</span><span>₹10</span></div>
+                <div class="cart-summary-row total"><span>Total</span><span id="totalAmount">₹0</span></div>
+                <button class="checkout-btn" onclick="openCheckout()">🚀 Proceed to Checkout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Modal -->
+    <div class="market-modal" id="ordersModal">
+        <div class="modal-box" style="max-width:700px;">
+            <button class="modal-close" onclick="closeOrders()">&times;</button>
+            <h2>📋 My Orders</h2>
+            <div id="ordersList"></div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="market-modal" id="checkoutModal">
+        <div class="modal-box" style="max-width:550px;">
+            <button class="modal-close" onclick="closeCheckout()">&times;</button>
+            <h2>📦 Checkout</h2>
+
+            <!-- Step 1: Delivery Address -->
+            <div id="checkoutStep1">
+                <h3 style="margin:20px 0 12px;color:#1b4332;">📍 Delivery Address</h3>
+                <div style="display:grid;gap:12px;">
+                    <input type="text" id="chkName" placeholder="Full Name *"
+                        style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;"
+                        onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                    <input type="tel" id="chkPhone" placeholder="Phone Number *"
+                        style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;"
+                        onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                    <textarea id="chkAddress" placeholder="Full Address (House No, Street, Landmark) *" rows="3"
+                        style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;resize:vertical;outline:none;transition:0.3s;font-family:inherit;"
+                        onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'"></textarea>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                        <input type="text" id="chkCity" placeholder="City *"
+                            style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;"
+                            onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                        <input type="text" id="chkState" placeholder="State *"
+                            style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;"
+                            onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                    </div>
+                    <input type="text" id="chkPincode" placeholder="Pincode *" maxlength="6"
+                        style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;width:50%;"
+                        onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                </div>
+
+                <h3 style="margin:25px 0 12px;color:#1b4332;">💳 Payment Method</h3>
+                <div style="display:grid;gap:10px;" id="paymentMethods">
+                    <label
+                        style="display:flex;align-items:center;gap:12px;padding:14px 18px;border:2px solid #ddd;border-radius:12px;cursor:pointer;transition:0.3s;"
+                        onclick="selectPayment(this,'cod')">
+                        <input type="radio" name="payment" value="cod"
+                            style="accent-color:#2d6a4f;width:18px;height:18px;">
+                        <span style="font-size:1.3rem;">💵</span>
+                        <div><strong>Cash on Delivery</strong><br><small style="color:#888;">Pay when you
+                                receive</small></div>
+                    </label>
+                    <label
+                        style="display:flex;align-items:center;gap:12px;padding:14px 18px;border:2px solid #ddd;border-radius:12px;cursor:pointer;transition:0.3s;"
+                        onclick="selectPayment(this,'upi')">
+                        <input type="radio" name="payment" value="upi"
+                            style="accent-color:#2d6a4f;width:18px;height:18px;">
+                        <span style="font-size:1.3rem;">📱</span>
+                        <div><strong>UPI Payment</strong><br><small style="color:#888;">GPay, PhonePe, Paytm</small>
+                        </div>
+                    </label>
+                    <label
+                        style="display:flex;align-items:center;gap:12px;padding:14px 18px;border:2px solid #ddd;border-radius:12px;cursor:pointer;transition:0.3s;"
+                        onclick="selectPayment(this,'card')">
+                        <input type="radio" name="payment" value="card"
+                            style="accent-color:#2d6a4f;width:18px;height:18px;">
+                        <span style="font-size:1.3rem;">💳</span>
+                        <div><strong>Credit / Debit Card</strong><br><small style="color:#888;">Visa, Mastercard,
+                                RuPay</small></div>
+                    </label>
+                    <label
+                        style="display:flex;align-items:center;gap:12px;padding:14px 18px;border:2px solid #ddd;border-radius:12px;cursor:pointer;transition:0.3s;"
+                        onclick="selectPayment(this,'netbanking')">
+                        <input type="radio" name="payment" value="netbanking"
+                            style="accent-color:#2d6a4f;width:18px;height:18px;">
+                        <span style="font-size:1.3rem;">🏦</span>
+                        <div><strong>Net Banking</strong><br><small style="color:#888;">All major banks</small></div>
+                    </label>
+                </div>
+
+                <!-- UPI ID Field -->
+                <div id="upiField" style="display:none;margin-top:12px;">
+                    <input type="text" id="chkUpi" placeholder="Enter UPI ID (e.g. name@upi)"
+                        style="width:100%;padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;box-sizing:border-box;"
+                        onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                </div>
+
+                <!-- Card Fields -->
+                <div id="cardFields" style="display:none;margin-top:12px;">
+                    <div style="display:grid;gap:10px;">
+                        <input type="text" id="chkCardNum" placeholder="Card Number" maxlength="19"
+                            style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;"
+                            onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                            <input type="text" id="chkExpiry" placeholder="MM/YY" maxlength="5"
+                                style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;"
+                                onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                            <input type="text" id="chkCvv" placeholder="CVV" maxlength="4"
+                                style="padding:12px 16px;border:2px solid #ddd;border-radius:10px;font-size:0.95rem;outline:none;transition:0.3s;"
+                                onfocus="this.style.borderColor='#2d6a4f'" onblur="this.style.borderColor='#ddd'">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary -->
+                <div
+                    style="margin-top:20px;padding:16px;background:linear-gradient(135deg,#f0fdf4,#e8f5e9);border-radius:12px;">
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.9rem;">
+                        <span>Subtotal</span><span id="chkSubtotal">₹0</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.9rem;">
+                        <span>Delivery</span><span>₹49</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:0.9rem;">
+                        <span>Platform Fee</span><span>₹10</span>
+                    </div>
+                    <div
+                        style="display:flex;justify-content:space-between;font-size:1.15rem;font-weight:bold;color:#1b4332;border-top:2px solid #2d6a4f;padding-top:10px;margin-top:8px;">
+                        <span>Total</span><span id="chkTotal">₹0</span>
+                    </div>
+                </div>
+
+                <button class="checkout-btn" onclick="confirmOrder()" style="margin-top:18px;">✅ Confirm & Place
+                    Order</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast" style="display:none;"></div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        requireAuth();
+
+        // ============ PRODUCT DATA (20 Products) ============
+        const products = [
+            { id: 1, name: "Basmati Rice (Premium)", price: 2200, unit: "per 25kg", category: "grains", image: "images/rice.png", seller: "Ravi Farms, Punjab", rating: 4.8, badge: "bestseller", stock: 150 },
+            { id: 2, name: "Organic Wheat Flour", price: 850, unit: "per 10kg", category: "grains", image: "images/wheat.png", seller: "Green Valley, Haryana", rating: 4.6, badge: "organic", stock: 200 },
+            { id: 3, name: "Fresh Tomatoes", price: 40, unit: "per kg", category: "vegetables", image: "images/tomatoes.png", seller: "Sai Vegetables, Maharashtra", rating: 4.3, badge: "", stock: 500 },
+            { id: 4, name: "Green Chili (Hari Mirch)", price: 80, unit: "per kg", category: "spices", image: "images/green_chili.png", seller: "Spice Garden, Andhra Pradesh", rating: 4.5, badge: "", stock: 300 },
+            { id: 5, name: "Alphonso Mango", price: 600, unit: "per dozen", category: "fruits", image: "images/mango.png", seller: "Kokan Orchards, Ratnagiri", rating: 4.9, badge: "bestseller", stock: 100 },
+            { id: 6, name: "Fresh Cow Milk", price: 65, unit: "per litre", category: "dairy", image: "images/milk.png", seller: "Anand Dairy, Gujarat", rating: 4.7, badge: "organic", stock: 1000 },
+            { id: 7, name: "Organic Turmeric Powder", price: 350, unit: "per kg", category: "spices", image: "images/turmeric.png", seller: "Kerala Naturals", rating: 4.8, badge: "organic", stock: 180 },
+            { id: 8, name: "Hybrid Tomato Seeds", price: 120, unit: "per 100g", category: "seeds", image: "images/seeds.png", seller: "AgroSeed India", rating: 4.4, badge: "new", stock: 500 },
+            { id: 9, name: "Lady Finger (Bhindi)", price: 35, unit: "per kg", category: "vegetables", image: "images/okra.png", seller: "Fresh Farms, UP", rating: 4.2, badge: "", stock: 400 },
+            { id: 10, name: "Sugarcane Jaggery", price: 180, unit: "per kg", category: "grains", image: "images/jaggery.png", seller: "Kolhapur Sweets, MH", rating: 4.6, badge: "organic", stock: 250 },
+            { id: 11, name: "Pomegranate (Anar)", price: 220, unit: "per kg", category: "fruits", image: "images/pomegranate.png", seller: "Solapur Farms, MH", rating: 4.5, badge: "", stock: 200 },
+            { id: 12, name: "Paneer (Fresh)", price: 340, unit: "per kg", category: "dairy", image: "images/paneer.png", seller: "Mother Dairy, Delhi", rating: 4.6, badge: "bestseller", stock: 150 },
+            { id: 13, name: "Sunflower Oil", price: 90, unit: "per 500ml", category: "seeds", image: "images/sunflower_oil.png", seller: "AgroSeed India", rating: 4.3, badge: "new", stock: 600 },
+            { id: 14, name: "Red Onion", price: 30, unit: "per kg", category: "vegetables", image: "images/onion.png", seller: "Nashik Farmers, MH", rating: 4.1, badge: "", stock: 800 },
+            { id: 15, name: "Cauliflower (Phool Gobi)", price: 45, unit: "per piece", category: "vegetables", image: "images/cauliflower.png", seller: "Punjab Veggies", rating: 4.3, badge: "", stock: 350 },
+            { id: 16, name: "Banana (Elaichi)", price: 60, unit: "per dozen", category: "fruits", image: "images/banana.png", seller: "Jalgaon Farms, MH", rating: 4.4, badge: "", stock: 500 },
+            { id: 17, name: "Ghee (Pure Desi)", price: 650, unit: "per litre", category: "dairy", image: "images/ghee.png", seller: "Amul, Gujarat", rating: 4.9, badge: "bestseller", stock: 300 },
+            { id: 18, name: "Hand Sprayer (5L)", price: 1200, unit: "per unit", category: "equipment", image: "images/hand sprayer.jpg", seller: "AgriTools Hub", rating: 4.5, badge: "new", stock: 75 },
+            { id: 19, name: "Maize Seeds (High Yield)", price: 200, unit: "per kg", category: "seeds", image: "images/maize seeds.jpg", seller: "Pioneer Seeds", rating: 4.6, badge: "", stock: 400 },
+            { id: 20, name: "Garden Hoe (Steel)", price: 450, unit: "per unit", category: "equipment", image: "images/hoe.jpg", seller: "FarmEquip India", rating: 4.2, badge: "", stock: 120 }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('farmgate_cart') || '[]');
+        let orders = JSON.parse(localStorage.getItem('farmgate_orders') || '[]');
+        let activeCategory = 'all';
+
+        // ============ RENDER PRODUCTS ============
+        function renderProducts(list) {
+            const grid = document.getElementById('productGrid');
+            if (list.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;color:#999;"><span style="font-size:3rem;">🔍</span><p>No products found</p></div>';
+                return;
+            }
+            grid.innerHTML = list.map(p => `
+                <div class="p-card" data-category="${p.category}">
+                    ${p.badge ? `<span class="p-card-badge badge-${p.badge}">${p.badge.toUpperCase()}</span>` : ''}
+                    <div class="p-card-img"><img src="${p.image}" alt="${p.name}" loading="lazy"></div>
+                    <div class="p-card-body">
+                        <h3>${p.name}</h3>
+                        <div class="p-seller">👨‍🌾 ${p.seller}</div>
+                        <div class="p-rating">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5 - Math.floor(p.rating))} ${p.rating}</div>
+                        <div class="p-price">₹${p.price.toLocaleString()}</div>
+                        <div class="p-unit">${p.unit} • ${p.stock} in stock</div>
+                        <div class="p-card-footer" style="margin-top:12px;">
+                            <button class="add-cart-btn" onclick="addToCart(${p.id})">🛒 Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // ============ FILTER ============
+        function filterCategory(cat) {
+            activeCategory = cat;
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            applyFilters();
+        }
+
+        function filterProducts() {
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            let filtered = products;
+            if (activeCategory !== 'all') filtered = filtered.filter(p => p.category === activeCategory);
+            if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.seller.toLowerCase().includes(search));
+            renderProducts(filtered);
+        }
+
+        // ============ CART ============
+        function addToCart(id) {
+            const existing = cart.find(c => c.id === id);
+            if (existing) { existing.qty++; }
+            else { cart.push({ id, qty: 1 }); }
+            saveCart();
+            showToast('Added to cart ✅');
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            saveCart();
+            renderCart();
+        }
+
+        function updateQty(id, delta) {
+            const item = cart.find(c => c.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) { removeFromCart(id); return; }
+            }
+            saveCart();
+            renderCart();
+        }
+
+        function saveCart() {
+            localStorage.setItem('farmgate_cart', JSON.stringify(cart));
+            document.getElementById('cartCount').textContent = cart.reduce((s, c) => s + c.qty, 0);
+        }
+
+        function renderCart() {
+            const container = document.getElementById('cartItems');
+            const summary = document.getElementById('cartSummary');
+
+            if (cart.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;"><span style="font-size:3rem;">🛒</span><p>Your cart is empty</p></div>';
+                summary.style.display = 'none';
+                return;
+            }
+
+            let subtotal = 0;
+            container.innerHTML = cart.map(c => {
+                const p = products.find(pr => pr.id === c.id);
+                if (!p) return '';
+                const lineTotal = p.price * c.qty;
+                subtotal += lineTotal;
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-img"><img src="${p.image}" alt="${p.name}"></div>
+                        <div class="cart-item-info">
+                            <h4>${p.name}</h4>
+                            <span>₹${p.price} ${p.unit}</span>
+                            <div class="qty-controls" style="margin-top:6px;">
+                                <button class="qty-btn" onclick="updateQty(${p.id},-1)">−</button>
+                                <strong>${c.qty}</strong>
+                                <button class="qty-btn" onclick="updateQty(${p.id},1)">+</button>
+                            </div>
+                            <button class="remove-btn" onclick="removeFromCart(${p.id})">✕ Remove</button>
+                        </div>
+                        <div class="cart-item-price">₹${lineTotal.toLocaleString()}</div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('subtotal').textContent = '₹' + subtotal.toLocaleString();
+            document.getElementById('totalAmount').textContent = '₹' + (subtotal + 49 + 10).toLocaleString();
+            summary.style.display = 'block';
+        }
+
+        function openCart() { document.getElementById('cartModal').classList.add('show'); renderCart(); }
+        function closeCart() { document.getElementById('cartModal').classList.remove('show'); }
+
+        // ============ CHECKOUT & ORDERS ============
+        let selectedPayment = '';
+
+        function openCheckout() {
+            closeCart();
+            // Reset form
+            document.querySelectorAll('#checkoutModal input[type=text], #checkoutModal input[type=tel], #checkoutModal textarea').forEach(el => el.value = '');
+            document.querySelectorAll('#paymentMethods input[type=radio]').forEach(r => r.checked = false);
+            document.querySelectorAll('#paymentMethods label').forEach(l => l.style.borderColor = '#ddd');
+            document.getElementById('cardFields').style.display = 'none';
+            document.getElementById('upiField').style.display = 'none';
+            selectedPayment = '';
+
+            // Fill totals
+            const subtotal = cart.reduce((s, c) => { const p = products.find(pr => pr.id === c.id); return s + (p ? p.price * c.qty : 0); }, 0);
+            document.getElementById('chkSubtotal').textContent = '₹' + subtotal.toLocaleString();
+            document.getElementById('chkTotal').textContent = '₹' + (subtotal + 49 + 10).toLocaleString();
+
+            document.getElementById('checkoutModal').classList.add('show');
+        }
+
+        function closeCheckout() { document.getElementById('checkoutModal').classList.remove('show'); }
+
+        function selectPayment(label, method) {
+            selectedPayment = method;
+            document.querySelectorAll('#paymentMethods label').forEach(l => l.style.borderColor = '#ddd');
+            label.style.borderColor = '#2d6a4f';
+            document.getElementById('cardFields').style.display = method === 'card' ? 'block' : 'none';
+            document.getElementById('upiField').style.display = method === 'upi' ? 'block' : 'none';
+        }
+
+        function confirmOrder() {
+            // Validate address
+            const name = document.getElementById('chkName').value.trim();
+            const phone = document.getElementById('chkPhone').value.trim();
+            const address = document.getElementById('chkAddress').value.trim();
+            const city = document.getElementById('chkCity').value.trim();
+            const state = document.getElementById('chkState').value.trim();
+            const pincode = document.getElementById('chkPincode').value.trim();
+
+            if (!name || !phone || !address || !city || !state || !pincode) {
+                showToast('⚠️ Please fill all address fields');
+                return;
+            }
+            if (phone.length < 10) {
+                showToast('⚠️ Enter a valid phone number');
+                return;
+            }
+            if (pincode.length < 6) {
+                showToast('⚠️ Enter a valid 6-digit pincode');
+                return;
+            }
+
+            // Validate payment
+            if (!selectedPayment) {
+                showToast('⚠️ Please select a payment method');
+                return;
+            }
+            if (selectedPayment === 'upi' && !document.getElementById('chkUpi').value.trim()) {
+                showToast('⚠️ Please enter your UPI ID');
+                return;
+            }
+            if (selectedPayment === 'card') {
+                const cardNum = document.getElementById('chkCardNum').value.trim();
+                const expiry = document.getElementById('chkExpiry').value.trim();
+                const cvv = document.getElementById('chkCvv').value.trim();
+                if (!cardNum || !expiry || !cvv) {
+                    showToast('⚠️ Please fill all card details');
+                    return;
+                }
+            }
+
+            // Place the order
+            if (cart.length === 0) return;
+            const subtotal = cart.reduce((s, c) => { const p = products.find(pr => pr.id === c.id); return s + (p ? p.price * c.qty : 0); }, 0);
+            const paymentLabels = { cod: 'Cash on Delivery', upi: 'UPI', card: 'Card', netbanking: 'Net Banking' };
+            const order = {
+                id: 'FG-' + Date.now().toString(36).toUpperCase(),
+                items: cart.map(c => { const p = products.find(pr => pr.id === c.id); return { name: p.name, image: p.image, qty: c.qty, price: p.price }; }),
+                total: subtotal + 59,
+                status: 'confirmed',
+                date: new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }),
+                trackStep: 1,
+                eta: '3-5 days',
+                address: `${name}, ${address}, ${city}, ${state} - ${pincode}`,
+                phone: phone,
+                payment: paymentLabels[selectedPayment] || selectedPayment
+            };
+            orders.unshift(order);
+            localStorage.setItem('farmgate_orders', JSON.stringify(orders));
+            cart = [];
+            saveCart();
+            closeCheckout();
+            showToast('Order placed successfully! 🎉');
+            // Simulate status updates
+            setTimeout(() => updateOrderStatus(order.id, 'shipped', 2), 8000);
+            setTimeout(() => updateOrderStatus(order.id, 'delivered', 4), 20000);
+        }
+
+        function updateOrderStatus(orderId, status, step) {
+            const order = orders.find(o => o.id === orderId);
+            if (order) {
+                order.status = status;
+                order.trackStep = step;
+                localStorage.setItem('farmgate_orders', JSON.stringify(orders));
+                if (status === 'shipped') showToast(`📦 Order ${orderId} has been shipped!`);
+                if (status === 'delivered') showToast(`✅ Order ${orderId} delivered!`);
+            }
+        }
+
+        function openOrders() {
+            document.getElementById('ordersModal').classList.add('show');
+            renderOrders();
+        }
+        function closeOrders() { document.getElementById('ordersModal').classList.remove('show'); }
+
+        function renderOrders() {
+            const container = document.getElementById('ordersList');
+            if (orders.length === 0) {
+                container.innerHTML = '<div class="no-orders"><span>📦</span><p>No orders yet. Start shopping!</p></div>';
+                return;
+            }
+
+            const statusMap = { confirmed: 'status-confirmed', shipped: 'status-shipped', delivered: 'status-delivered', processing: 'status-processing' };
+            const steps = [{ icon: '✓', label: 'Ordered' }, { icon: '📦', label: 'Packed' }, { icon: '🚚', label: 'Shipped' }, { icon: '✅', label: 'Delivered' }];
+
+            container.innerHTML = orders.map(o => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <span class="order-id">${o.id}</span>
+                            <span style="font-size:0.8rem;color:#888;margin-left:10px;">${o.date}</span>
+                        </div>
+                        <span class="order-status ${statusMap[o.status] || ''}">${o.status.toUpperCase()}</span>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        ${o.items.map(i => `<span style="margin-right:12px;display:inline-flex;align-items:center;gap:6px;"><img src="${i.image}" alt="${i.name}" style="width:24px;height:24px;border-radius:4px;object-fit:cover;"> ${i.name} × ${i.qty}</span>`).join('')}
+                    </div>
+                    <div class="tracking-steps">
+                        ${steps.map((s, i) => `
+                            <div class="track-step">
+                                <div class="track-dot ${i < o.trackStep ? 'done' : ''} ${i === o.trackStep - 1 ? 'active' : ''}">${s.icon}</div>
+                                <div class="track-label ${i === o.trackStep - 1 ? 'active' : ''}">${s.label}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div style="display:flex;justify-content:space-between;margin-top:10px;flex-wrap:wrap;gap:8px;">
+                        <span style="font-weight:bold;color:#1b4332;">Total: ₹${o.total.toLocaleString()}</span>
+                        <span style="font-size:0.85rem;color:#888;">ETA: ${o.eta}</span>
+                    </div>
+                    ${o.address ? `<div style="margin-top:10px;padding:10px 14px;background:#f9f9f9;border-radius:8px;font-size:0.85rem;">
+                        <div style="color:#666;margin-bottom:4px;">📍 <strong>Deliver to:</strong> ${o.address}</div>
+                        <div style="color:#666;">📞 ${o.phone || ''} &nbsp;|&nbsp; 💳 ${o.payment || ''}</div>
+                    </div>` : ''}
+                </div>
+            `).join('');
+        }
+
+        // ============ TOAST ============
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            t.classList.remove('hide');
+            setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.style.display = 'none', 300); }, 2500);
+        }
+
+        // ============ INIT ============
+        renderProducts(products);
+        saveCart();
+
+        // Close modals on outside click
+        document.querySelectorAll('.market-modal').forEach(m => {
+            m.onclick = (e) => { if (e.target === m) m.classList.remove('show'); };
+        });
+    </script>
+</body>
+
+</html>

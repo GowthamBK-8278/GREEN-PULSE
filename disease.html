@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Detector | FarmGate</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .dd-page {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Hero Banner */
+        .dd-hero {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b, #b91c1c, #dc2626);
+            border-radius: 24px;
+            padding: 36px 40px;
+            color: white;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .dd-hero::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.06);
+            border-radius: 50%;
+        }
+
+        .dd-hero-icon {
+            font-size: 4rem;
+            animation: floatIcon 3s ease-in-out infinite;
+            z-index: 2;
+        }
+
+        @keyframes floatIcon {
+
+            0%,
+            100% {
+                transform: translateY(0)
+            }
+
+            50% {
+                transform: translateY(-8px)
+            }
+        }
+
+        .dd-hero h1 {
+            margin: 0 0 6px;
+            font-size: 1.6rem;
+            z-index: 2;
+        }
+
+        .dd-hero p {
+            margin: 0;
+            opacity: 0.85;
+            font-size: 0.9rem;
+            z-index: 2;
+        }
+
+        /* Upload Section */
+        .dd-upload-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .dd-upload-zone {
+            border: 3px dashed #2d6a4f;
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #f0fdf4, #f8fbf9);
+            cursor: pointer;
+            transition: 0.3s;
+            min-height: 260px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .dd-upload-zone:hover {
+            background: linear-gradient(135deg, #dcfce7, #f0fdf4);
+            border-color: #1b4332;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(45, 106, 79, 0.15);
+        }
+
+        .dd-upload-zone.drag-over {
+            background: #dcfce7;
+            border-style: solid;
+            transform: scale(1.02);
+        }
+
+        .dd-upload-zone.has-image {
+            padding: 10px;
+            border-style: solid;
+        }
+
+        .dd-upload-zone .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 12px;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+
+        .dd-upload-zone h3 {
+            color: #1b4332;
+            margin: 0 0 6px;
+        }
+
+        .dd-upload-zone p {
+            color: #666;
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+        }
+
+        .dd-upload-zone .hint {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        .dd-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 14px;
+            object-fit: contain;
+        }
+
+        /* Form Panel */
+        .dd-form-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .dd-input-group label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1b4332;
+            margin-bottom: 6px;
+        }
+
+        .dd-input-group select,
+        .dd-input-group textarea {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e8e0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .dd-input-group select:focus,
+        .dd-input-group textarea:focus {
+            border-color: #2d6a4f;
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.12);
+        }
+
+        .dd-input-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .dd-analyze-btn {
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+            color: white;
+            font-weight: 800;
+            font-size: 1.05rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.3px;
+        }
+
+        .dd-analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(127, 29, 29, 0.3);
+        }
+
+        .dd-analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Info Cards */
+        .dd-info-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .dd-info-card {
+            background: linear-gradient(135deg, #fef2f2, #fee2e2);
+            padding: 16px;
+            border-radius: 12px;
+            border-left: 4px solid #dc2626;
+        }
+
+        .dd-info-card h4 {
+            margin: 0 0 6px;
+            color: #7f1d1d;
+            font-size: 0.85rem;
+        }
+
+        .dd-info-card p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #666;
+            line-height: 1.4;
+        }
+
+        /* Loading */
+        .dd-loading {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .dd-loading .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #fecaca;
+            border-top: 5px solid #dc2626;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Result Summary */
+        .dd-result-banner {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b, #b91c1c);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .dd-result-banner h2 {
+            margin: 0 0 8px;
+            font-size: 1.5rem;
+        }
+
+        .dd-result-badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .dd-rbadge {
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dd-rbadge.high {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .dd-rbadge.medium {
+            background: rgba(251, 191, 36, 0.3);
+        }
+
+        .dd-rbadge.low {
+            background: rgba(52, 211, 153, 0.3);
+        }
+
+        .dd-severity-gauge {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 16px 28px;
+            border-radius: 14px;
+        }
+
+        .dd-severity-gauge .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+            letter-spacing: 1px;
+        }
+
+        .dd-severity-gauge .value {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        /* Result Cards Grid */
+        .dd-result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .dd-result-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e8ece8;
+            transition: 0.3s;
+        }
+
+        .dd-result-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .dd-result-card .rc-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #fef2f2;
+        }
+
+        .dd-result-card .rc-header span {
+            font-size: 1.6rem;
+        }
+
+        .dd-result-card .rc-header h3 {
+            margin: 0;
+            color: #7f1d1d;
+            font-size: 1rem;
+        }
+
+        .dd-result-card .rc-body {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .dd-result-card .rc-body ul {
+            padding-left: 18px;
+            margin: 8px 0 0;
+        }
+
+        .dd-result-card .rc-body li {
+            margin-bottom: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .dd-upload-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dd-info-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .dd-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .dd-result-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="logo">🌾 GREEN PULSE</div>
+        <ul class="side-nav">
+            <li onclick="location.href='home.html'">Main Menu</li>
+            <li onclick="location.href='soil.html'">Soil Data</li>
+            <li onclick="location.href='weather.html'">Weather</li>
+            <li onclick="location.href='crop-recommend.html'">Crop Strategist</li>
+            <li class="active" onclick="location.href='disease.html'">Disease Detector</li>
+            <li onclick="location.href='market.html'">Marketplace</li>
+            <li onclick="location.href='chatbot.html'">AI Assistant</li>
+            <li onclick="location.href='messages.html'">Messages</li>
+            <li onclick="signOut()" style="margin-top:30px; background:#e63946; text-align:center; border-radius:8px;">
+                🚪 Sign Out</li>
+        </ul>
+    </nav>
+
+    <main class="main-content dd-page">
+
+        <!-- Hero -->
+        <div class="dd-hero">
+            <div class="dd-hero-icon">🔬</div>
+            <div>
+                <h1>AI Plant Disease Detector</h1>
+                <p>Upload a leaf photo → Gemini AI diagnoses disease, cause, treatment & prevention in seconds.</p>
+            </div>
+        </div>
+
+        <!-- Upload + Form -->
+        <div class="dd-upload-grid">
+            <div class="dd-upload-zone" id="uploadZone" onclick="document.getElementById('imageInput').click()">
+                <div id="uploadPlaceholder">
+                    <div class="upload-icon">📸</div>
+                    <h3>Upload Plant Image</h3>
+                    <p>Drag & drop or click to browse</p>
+                    <span class="hint">JPG, PNG, WEBP — Max 10MB</span>
+                </div>
+                <img id="imagePreview" class="dd-preview" style="display:none;" alt="Preview">
+                <input type="file" id="imageInput" accept="image/*" style="display:none;"
+                    onchange="previewImage(event)">
+            </div>
+
+            <div class="dd-form-panel">
+                <div class="dd-input-group">
+                    <label>🌿 Crop Type</label>
+                    <select id="cropType">
+                        <option value="Rice">Rice (धान)</option>
+                        <option value="Wheat">Wheat (गेहूँ)</option>
+                        <option value="Tomato">Tomato (टमाटर)</option>
+                        <option value="Potato">Potato (आलू)</option>
+                        <option value="Cotton">Cotton (कपास)</option>
+                        <option value="Maize">Maize (मक्का)</option>
+                        <option value="Sugarcane">Sugarcane (गन्ना)</option>
+                        <option value="Soybean">Soybean</option>
+                        <option value="Brinjal">Brinjal (बैंगन)</option>
+                        <option value="Lady Finger">Lady Finger (भिंडी)</option>
+                        <option value="Cauliflower">Cauliflower</option>
+                        <option value="Chili">Chili (मिर्च)</option>
+                        <option value="Onion">Onion (प्याज)</option>
+                        <option value="Mango">Mango (आम)</option>
+                        <option value="Banana">Banana (केला)</option>
+                        <option value="Grapes">Grapes (अंगूर)</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <div class="dd-input-group">
+                    <label>📝 Describe Symptoms (Optional)</label>
+                    <textarea id="symptoms"
+                        placeholder="e.g. Yellow spots on leaves, wilting, brown edges..."></textarea>
+                </div>
+
+                <div class="dd-info-cards">
+                    <div class="dd-info-card">
+                        <h4>📸 Photo Tips</h4>
+                        <p>Take close-up of affected leaf. Use natural daylight. Avoid blurry images.</p>
+                    </div>
+                    <div class="dd-info-card">
+                        <h4>🤖 AI Detects</h4>
+                        <p>Disease name, cause, severity, treatment, organic remedies & prevention.</p>
+                    </div>
+                </div>
+
+                <button class="dd-analyze-btn" id="analyzeBtn" onclick="analyzePlant()">
+                    🔬 Analyze Disease
+                </button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsContainer"></div>
+
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        requireAuth();
+        const BACKEND_URL = 'http://localhost:5000';
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            if (file.size > 10 * 1024 * 1024) { alert('Image too large! Max 10MB.'); return; }
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('imagePreview').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+                document.getElementById('uploadPlaceholder').style.display = 'none';
+                document.getElementById('uploadZone').classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Drag & Drop
+        const zone = document.getElementById('uploadZone');
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault(); zone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const input = document.getElementById('imageInput');
+                const dt = new DataTransfer(); dt.items.add(file); input.files = dt.files;
+                previewImage({ target: input });
+            }
+        });
+
+        async function analyzePlant() {
+            const imageInput = document.getElementById('imageInput');
+            if (!imageInput.files[0]) { alert('Please upload a plant image first!'); return; }
+
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '<div class="dd-loading"><div class="spinner"></div><p style="color:#7f1d1d;font-weight:600;">Gemini AI analyzing your plant...</p><span style="color:#888;">Identifying disease, cause & treatment</span></div>';
+
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('analyzeBtn').textContent = '⏳ Analyzing...';
+
+            const formData = new FormData();
+            formData.append('image', imageInput.files[0]);
+            formData.append('crop', document.getElementById('cropType').value);
+            formData.append('symptoms', document.getElementById('symptoms').value);
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/predict-disease`, { method: 'POST', body: formData });
+                const data = await response.json();
+                if (data.success) { displayResults(data.diagnosis); }
+                else { container.innerHTML = '<div class="dd-loading"><span style="font-size:3rem;">❌</span><p style="color:#e63946;">' + (data.error || 'Error') + '</p></div>'; }
+            } catch (err) {
+                container.innerHTML = '<div class="dd-loading"><span style="font-size:3rem;">❌</span><p style="color:#e63946;">Connection error. Is the server running?</p></div>';
+            }
+
+            document.getElementById('analyzeBtn').disabled = false;
+            document.getElementById('analyzeBtn').textContent = '🔬 Analyze Disease';
+        }
+
+        function displayResults(d) {
+            const sevColors = { 'Mild': '#34d399', 'Moderate': '#fbbf24', 'Severe': '#ef4444', 'None': '#34d399' };
+            const sevClass = { 'High': 'high', 'Medium': 'medium', 'Low': 'low' };
+            const sev = d.severity || 'Unknown';
+            const conf = (d.confidence || '').toLowerCase();
+
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = `
+                <div class="dd-result-banner">
+                    <div>
+                        <h2>🦠 ${d.disease_name || 'Unknown Disease'}</h2>
+                        <div class="dd-result-badges">
+                            <span class="dd-rbadge ${sevClass[conf] || ''}">${d.confidence || 'N/A'} Confidence</span>
+                            <span class="dd-rbadge">${d.pathogen_type || 'Unknown'}</span>
+                            <span class="dd-rbadge">📍 ${d.affected_part || 'Unknown'}</span>
+                            <span class="dd-rbadge">🌿 ${document.getElementById('cropType').value}</span>
+                        </div>
+                    </div>
+                    <div class="dd-severity-gauge">
+                        <div class="label">Severity</div>
+                        <div class="value" style="color:${sevColors[sev] || '#fff'}">${sev}</div>
+                    </div>
+                </div>
+
+                <div class="dd-result-grid">
+                    <div class="dd-result-card">
+                        <div class="rc-header"><span>🦠</span><h3>Cause</h3></div>
+                        <div class="rc-body"><p>${d.cause || 'Not identified'}</p></div>
+                    </div>
+                    <div class="dd-result-card">
+                        <div class="rc-header"><span>🔍</span><h3>Symptoms</h3></div>
+                        <div class="rc-body">${formatList(d.symptoms_list)}</div>
+                    </div>
+                    <div class="dd-result-card">
+                        <div class="rc-header"><span>💊</span><h3>Treatment</h3></div>
+                        <div class="rc-body">${formatList(d.treatment)}</div>
+                    </div>
+                    <div class="dd-result-card">
+                        <div class="rc-header"><span>🌿</span><h3>Organic Remedies</h3></div>
+                        <div class="rc-body">${formatList(d.organic_remedies)}</div>
+                    </div>
+                    <div class="dd-result-card">
+                        <div class="rc-header"><span>🧪</span><h3>Chemical Treatment</h3></div>
+                        <div class="rc-body"><p>${d.chemical_treatment || 'Not required'}</p></div>
+                    </div>
+                    <div class="dd-result-card">
+                        <div class="rc-header"><span>🛡️</span><h3>Prevention</h3></div>
+                        <div class="rc-body">${formatList(d.prevention)}</div>
+                    </div>
+                </div>
+                ${d.additional_notes ? `
+                <div class="dd-result-card" style="margin-bottom:24px;">
+                    <div class="rc-header"><span>📌</span><h3>Additional Notes</h3></div>
+                    <div class="rc-body"><p>${d.additional_notes}</p></div>
+                </div>` : ''}
+            `;
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function formatList(arr) {
+            if (!arr || arr.length === 0) return '<p style="opacity:0.6">No data available</p>';
+            return '<ul>' + arr.map(i => `<li>${i}</li>`).join('') + '</ul>';
+        }
+    </script>
+</body>
+
+</html>

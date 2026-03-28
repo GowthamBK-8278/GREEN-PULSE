@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Strategist | FarmGate</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .cs-page {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Hero Input Section */
+        .cs-hero {
+            background: linear-gradient(135deg, #1b4332, #2d6a4f, #40916c);
+            border-radius: 24px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cs-hero::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .cs-hero h1 {
+            margin: 0 0 8px;
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cs-hero p {
+            margin: 0 0 28px;
+            opacity: 0.85;
+            font-size: 0.95rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cs-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .cs-form .full-row {
+            grid-column: 1 / -1;
+        }
+
+        .cs-input-group label {
+            font-size: 0.78rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.85;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .cs-input-group input,
+        .cs-input-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+
+        .cs-input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .cs-input-group input:focus,
+        .cs-input-group select:focus {
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .cs-input-group select option {
+            color: #333;
+            background: white;
+        }
+
+        .cs-submit-btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 14px;
+            background: white;
+            color: #1b4332;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cs-submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .cs-submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Quick Crop Tags */
+        .crop-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .crop-tag {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .crop-tag:hover {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: white;
+        }
+
+        /* Loading */
+        .cs-loading {
+            text-align: center;
+            padding: 60px;
+        }
+
+        .cs-loading .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e8e0;
+            border-top: 4px solid #2d6a4f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Summary Banner */
+        .cs-summary {
+            background: linear-gradient(135deg, #f0fdf4, #d8f3dc);
+            border: 2px solid #b7e4c7;
+            border-radius: 20px;
+            padding: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .cs-summary-left h2 {
+            margin: 0 0 6px;
+            color: #1b4332;
+            font-size: 1.5rem;
+        }
+
+        .cs-summary-left p {
+            margin: 0;
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .cs-profit-tag {
+            background: linear-gradient(135deg, #1b4332, #2d6a4f);
+            color: white;
+            padding: 16px 28px;
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .cs-profit-tag .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+        }
+
+        .cs-profit-tag .value {
+            font-size: 1.8rem;
+            font-weight: 800;
+        }
+
+        /* Cost Breakdown */
+        .cs-cost-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .cs-cost-card {
+            background: white;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: center;
+            border: 1px solid #e8ece8;
+            transition: 0.3s;
+        }
+
+        .cs-cost-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .cs-cost-card .cc-icon {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+        }
+
+        .cs-cost-card .cc-label {
+            font-size: 0.72rem;
+            color: #888;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .cs-cost-card .cc-value {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #1b4332;
+            margin-top: 4px;
+        }
+
+        .cs-cost-card.total {
+            background: linear-gradient(135deg, #1b4332, #2d6a4f);
+            color: white;
+        }
+
+        .cs-cost-card.total .cc-label {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .cs-cost-card.total .cc-value {
+            color: white;
+            font-size: 1.4rem;
+        }
+
+        /* Info Grid */
+        .cs-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .cs-info-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid #e8ece8;
+            transition: 0.3s;
+        }
+
+        .cs-info-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+        }
+
+        .cs-info-card .ic-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0fdf4;
+        }
+
+        .cs-info-card .ic-header span {
+            font-size: 1.6rem;
+        }
+
+        .cs-info-card .ic-header h3 {
+            margin: 0;
+            color: #1b4332;
+            font-size: 1rem;
+        }
+
+        .cs-info-card .ic-body {
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+
+        .cs-info-card .ic-body ul {
+            padding-left: 18px;
+            margin: 8px 0 0;
+        }
+
+        .cs-info-card .ic-body li {
+            margin-bottom: 6px;
+        }
+
+        /* Timeline */
+        .cs-timeline {
+            margin-bottom: 24px;
+        }
+
+        .cs-timeline h2 {
+            color: #1b4332;
+            margin: 0 0 16px;
+            font-size: 1.15rem;
+        }
+
+        .timeline-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 14px;
+        }
+
+        .timeline-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border-left: 4px solid #2d6a4f;
+            transition: 0.3s;
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .timeline-card .phase {
+            font-weight: 700;
+            color: #1b4332;
+            margin-bottom: 4px;
+        }
+
+        .timeline-card .duration {
+            font-size: 0.8rem;
+            color: #2d6a4f;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .timeline-card .tasks {
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Revenue Card */
+        .cs-revenue {
+            background: linear-gradient(135deg, #065f46, #047857, #059669);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+        }
+
+        .revenue-item {
+            text-align: center;
+        }
+
+        .revenue-item .ri-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.7;
+            letter-spacing: 0.5px;
+        }
+
+        .revenue-item .ri-value {
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+
+        .revenue-item.highlight .ri-value {
+            font-size: 1.8rem;
+            color: #4ade80;
+        }
+
+        /* Tips */
+        .cs-tips {
+            background: linear-gradient(135deg, #fffbeb, #fef3c7);
+            border: 1px solid #fde68a;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .cs-tips h3 {
+            margin: 0 0 12px;
+            color: #92400e;
+            font-size: 1rem;
+        }
+
+        .cs-tips ul {
+            padding-left: 18px;
+            margin: 0;
+        }
+
+        .cs-tips li {
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #78350f;
+        }
+
+        @media (max-width: 768px) {
+            .cs-form {
+                grid-template-columns: 1fr;
+            }
+
+            .cs-hero {
+                padding: 24px;
+            }
+
+            .cs-summary {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body class="dashboard-body">
+    <nav class="sidebar">
+        <div class="logo">🌾 FarmGate</div>
+        <ul class="side-nav">
+            <li onclick="location.href='home.html'">Main Menu</li>
+            <li onclick="location.href='soil.html'">Soil Data</li>
+            <li onclick="location.href='weather.html'">Weather</li>
+            <li class="active" onclick="location.href='crop-recommend.html'">Crop Strategist</li>
+            <li onclick="location.href='disease.html'">Disease Detector</li>
+            <li onclick="location.href='market.html'">Marketplace</li>
+            <li onclick="location.href='chatbot.html'">AI Assistant</li>
+            <li onclick="location.href='messages.html'">Messages</li>
+            <li onclick="signOut()" style="margin-top:30px; background:#e63946; text-align:center; border-radius:8px;">
+                🚪 Sign Out</li>
+        </ul>
+    </nav>
+
+    <main class="main-content cs-page">
+
+        <!-- Hero Input -->
+        <div class="cs-hero">
+            <h1>🌱 Smart Crop Strategist</h1>
+            <p>Enter your crop and land details — Gemini AI will build a complete farming blueprint with cost analysis,
+                yield prediction & profit estimate.</p>
+
+            <div class="crop-tags">
+                <span class="crop-tag" onclick="fillCrop('Tomato')">🍅 Tomato</span>
+                <span class="crop-tag" onclick="fillCrop('Rice')">🌾 Rice</span>
+                <span class="crop-tag" onclick="fillCrop('Wheat')">🌿 Wheat</span>
+                <span class="crop-tag" onclick="fillCrop('Cotton')">☁️ Cotton</span>
+                <span class="crop-tag" onclick="fillCrop('Maize')">🌽 Maize</span>
+                <span class="crop-tag" onclick="fillCrop('Sugarcane')">🎋 Sugarcane</span>
+                <span class="crop-tag" onclick="fillCrop('Potato')">🥔 Potato</span>
+                <span class="crop-tag" onclick="fillCrop('Onion')">🧅 Onion</span>
+                <span class="crop-tag" onclick="fillCrop('Chili')">🌶️ Chili</span>
+                <span class="crop-tag" onclick="fillCrop('Groundnut')">🥜 Groundnut</span>
+            </div>
+
+            <div class="cs-form">
+                <div class="cs-input-group">
+                    <label>🌾 Crop Name</label>
+                    <input type="text" id="cropName" placeholder="e.g. Tomato, Rice, Wheat...">
+                </div>
+                <div class="cs-input-group">
+                    <label>📏 Land Area (Acres)</label>
+                    <input type="number" id="landArea" placeholder="e.g. 5" min="0.5">
+                </div>
+                <div class="cs-input-group">
+                    <label>🪨 Soil Type</label>
+                    <select id="soilType">
+                        <option value="Loamy">Loamy (Balanced)</option>
+                        <option value="Sandy">Sandy (Quick Draining)</option>
+                        <option value="Clay">Clay (Water Retaining)</option>
+                        <option value="Black Cotton">Black Cotton Soil</option>
+                        <option value="Red">Red Soil</option>
+                        <option value="Alluvial">Alluvial</option>
+                        <option value="Laterite">Laterite</option>
+                    </select>
+                </div>
+                <div class="cs-input-group">
+                    <label>📅 Season</label>
+                    <select id="season">
+                        <option value="Kharif (June-Oct)">Kharif (June-Oct)</option>
+                        <option value="Rabi (Oct-Mar)">Rabi (Oct-Mar)</option>
+                        <option value="Zaid (Mar-Jun)">Zaid (Mar-Jun)</option>
+                        <option value="Year Round">Year Round</option>
+                    </select>
+                </div>
+                <div class="cs-input-group">
+                    <label>💰 Budget (₹)</label>
+                    <input type="number" id="budget" placeholder="e.g. 50000">
+                </div>
+                <div class="cs-input-group" style="display:flex;align-items:flex-end;">
+                    <button class="cs-submit-btn" id="submitBtn" onclick="generateStrategy()">
+                        🚀 Generate Strategy
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer"></div>
+
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        requireAuth();
+
+        function fillCrop(name) {
+            document.getElementById('cropName').value = name;
+            document.getElementById('cropName').focus();
+        }
+
+        async function generateStrategy() {
+            const crop = document.getElementById('cropName').value.trim();
+            const area = document.getElementById('landArea').value;
+            const soil = document.getElementById('soilType').value;
+            const season = document.getElementById('season').value;
+            const budget = document.getElementById('budget').value || '50000';
+
+            if (!crop) { alert('Please enter a crop name!'); return; }
+            if (!area) { alert('Please enter your land area!'); return; }
+
+            const container = document.getElementById('resultsContainer');
+            container.innerHTML = '<div class="cs-loading"><div class="spinner"></div><p style="color:#1b4332;font-weight:600;">Gemini AI is building your farming blueprint...</p><span style="color:#888;">Calculating costs, yield, and profit for ' + crop + ' on ' + area + ' acres</span></div>';
+
+            document.getElementById('submitBtn').disabled = true;
+            document.getElementById('submitBtn').textContent = '⏳ Analyzing...';
+
+            try {
+                const res = await fetch('/crop-strategy', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ crop, area, soil, season, budget })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    renderStrategy(data.strategy);
+                } else {
+                    container.innerHTML = '<div class="cs-loading"><span style="font-size:3rem;">❌</span><p style="color:#e63946;">' + (data.error || 'Failed to generate strategy') + '</p></div>';
+                }
+            } catch (err) {
+                container.innerHTML = '<div class="cs-loading"><span style="font-size:3rem;">❌</span><p style="color:#e63946;">Connection error. Is the server running?</p></div>';
+            }
+
+            document.getElementById('submitBtn').disabled = false;
+            document.getElementById('submitBtn').textContent = '🚀 Generate Strategy';
+        }
+
+        function renderStrategy(s) {
+            const container = document.getElementById('resultsContainer');
+            const pg = s.planting_guide || {};
+            const cb = s.cost_breakdown || {};
+            const ye = s.yield_estimate || {};
+
+            container.innerHTML = `
+                <!-- Summary -->
+                <div class="cs-summary">
+                    <div class="cs-summary-left">
+                        <h2>${s.crop_emoji || '🌱'} ${s.crop_name || 'Crop'} Strategy</h2>
+                        <p>${s.summary || 'Your personalized farming blueprint is ready.'}</p>
+                    </div>
+                    <div class="cs-profit-tag">
+                        <div class="label">Est. Profit</div>
+                        <div class="value">${ye.net_profit || 'N/A'}</div>
+                    </div>
+                </div>
+
+                <!-- Revenue Banner -->
+                <div class="cs-revenue">
+                    <div class="revenue-item">
+                        <div class="ri-label">Total Cost</div>
+                        <div class="ri-value">${cb.total_cost || 'N/A'}</div>
+                    </div>
+                    <div class="revenue-item">
+                        <div class="ri-label">Expected Yield</div>
+                        <div class="ri-value">${ye.total_yield || 'N/A'}</div>
+                    </div>
+                    <div class="revenue-item">
+                        <div class="ri-label">Market Price</div>
+                        <div class="ri-value">${ye.market_price || 'N/A'}</div>
+                    </div>
+                    <div class="revenue-item">
+                        <div class="ri-label">Total Revenue</div>
+                        <div class="ri-value">${ye.total_revenue || 'N/A'}</div>
+                    </div>
+                    <div class="revenue-item highlight">
+                        <div class="ri-label">ROI</div>
+                        <div class="ri-value">${ye.roi_percentage || 'N/A'}</div>
+                    </div>
+                </div>
+
+                <!-- Cost Breakdown -->
+                <h2 style="color:#1b4332;margin:0 0 14px;font-size:1.15rem;">💰 Cost Breakdown</h2>
+                <div class="cs-cost-grid">
+                    <div class="cs-cost-card"><div class="cc-icon">🌱</div><div class="cc-label">Seeds</div><div class="cc-value">${cb.seeds || 'N/A'}</div></div>
+                    <div class="cs-cost-card"><div class="cc-icon">🧪</div><div class="cc-label">Fertilizer</div><div class="cc-value">${cb.fertilizer || 'N/A'}</div></div>
+                    <div class="cs-cost-card"><div class="cc-icon">🐛</div><div class="cc-label">Pesticides</div><div class="cc-value">${cb.pesticides || 'N/A'}</div></div>
+                    <div class="cs-cost-card"><div class="cc-icon">👷</div><div class="cc-label">Labor</div><div class="cc-value">${cb.labor || 'N/A'}</div></div>
+                    <div class="cs-cost-card"><div class="cc-icon">💧</div><div class="cc-label">Irrigation</div><div class="cc-value">${cb.irrigation || 'N/A'}</div></div>
+                    <div class="cs-cost-card"><div class="cc-icon">📦</div><div class="cc-label">Misc</div><div class="cc-value">${cb.misc || 'N/A'}</div></div>
+                    <div class="cs-cost-card total"><div class="cc-icon">💵</div><div class="cc-label">Total Investment</div><div class="cc-value">${cb.total_cost || 'N/A'}</div></div>
+                </div>
+
+                <!-- Planting Guide & Info -->
+                <div class="cs-info-grid">
+                    <div class="cs-info-card">
+                        <div class="ic-header"><span>🌱</span><h3>Planting Guide</h3></div>
+                        <div class="ic-body">
+                            <ul>
+                                <li><strong>Season:</strong> ${pg.best_season || 'N/A'}</li>
+                                <li><strong>Variety:</strong> ${pg.seed_variety || 'N/A'}</li>
+                                <li><strong>Seed Rate:</strong> ${pg.seed_rate || 'N/A'}</li>
+                                <li><strong>Total Seeds:</strong> ${pg.total_seeds || 'N/A'}</li>
+                                <li><strong>Spacing:</strong> ${pg.spacing || 'N/A'}</li>
+                                <li><strong>Sowing Depth:</strong> ${pg.depth || 'N/A'}</li>
+                                <li><strong>Germination:</strong> ${pg.germination_days || 'N/A'}</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="cs-info-card">
+                        <div class="ic-header"><span>🧪</span><h3>Fertilizer Plan</h3></div>
+                        <div class="ic-body">
+                            ${s.fertilizer_plan ? '<ul>' + s.fertilizer_plan.map(f => '<li>' + f + '</li>').join('') + '</ul>' : '<p>No data</p>'}
+                        </div>
+                    </div>
+                    <div class="cs-info-card">
+                        <div class="ic-header"><span>💧</span><h3>Irrigation Plan</h3></div>
+                        <div class="ic-body"><p>${s.irrigation_plan || 'No data'}</p></div>
+                    </div>
+                    <div class="cs-info-card">
+                        <div class="ic-header"><span>🐛</span><h3>Pest Management</h3></div>
+                        <div class="ic-body">
+                            ${s.pest_management ? '<ul>' + s.pest_management.map(p => '<li>' + p + '</li>').join('') + '</ul>' : '<p>No data</p>'}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeline -->
+                ${s.timeline ? `
+                <div class="cs-timeline">
+                    <h2>📅 Farming Timeline</h2>
+                    <div class="timeline-row">
+                        ${s.timeline.map(t => `
+                            <div class="timeline-card">
+                                <div class="phase">${t.phase}</div>
+                                <div class="duration">⏱ ${t.duration}</div>
+                                <div class="tasks">${t.tasks}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>` : ''}
+
+                <!-- Tips -->
+                ${s.tips ? `
+                <div class="cs-tips">
+                    <h3>💡 Expert Tips</h3>
+                    <ul>${s.tips.map(t => '<li>' + t + '</li>').join('')}</ul>
+                </div>` : ''}
+
+                <!-- Govt Schemes -->
+                ${s.govt_schemes ? `
+                <div class="cs-info-card" style="margin-bottom:24px;">
+                    <div class="ic-header"><span>🏛️</span><h3>Government Schemes</h3></div>
+                    <div class="ic-body">
+                        <ul>${s.govt_schemes.map(g => '<li>' + g + '</li>').join('')}</ul>
+                    </div>
+                </div>` : ''}
+            `;
+
+            container.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+
+</html>
